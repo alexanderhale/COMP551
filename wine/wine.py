@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import lda
 
 # column titles:
     # "fixed acidity";
@@ -27,3 +28,5 @@ for row in winedata:
         row[11] = 1
     else:
         row[11] = 0
+
+lda.lda.fit(winedata[:, 0:10], winedata[:, 11]) # call LDA with the training data
