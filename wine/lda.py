@@ -8,7 +8,7 @@ class LDA:
 
     # x = 2D array containing training data
     # y = results of that training data
-    # doesn't returning anything, but finishes by modifying model parameters w0 and w
+    # doesn't return anything, but finishes by modifying model parameters w0 and w
     def fit(self, x, y):
         # calculate P(y = 0) and P(y = 1)
         n0 = 0                              # stores number of results in class 0
