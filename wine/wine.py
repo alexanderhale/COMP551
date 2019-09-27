@@ -76,4 +76,10 @@ for row in winedata:
 # print(evaluate_acc(winedata[:, 11], y_hat))
 
 # k-fold accuracy test
-print(k_fold(winedata[:, 0:10], winedata[:, 11], 10))    # evaluate model accuracy using k-fold validation
+print(k_fold(winedata[:, 0:10], winedata[:, 11], 1))    # evaluate model accuracy using k-fold validation
+
+# compare performance to scikit learn
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# clf = LinearDiscriminantAnalysis()
+# clf.fit(winedata[:, 0:10], winedata[:, 11])
+# print(evaluate_acc(winedata[:, 11], clf.predict(winedata[:, 0:10])))

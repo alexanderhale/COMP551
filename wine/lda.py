@@ -31,8 +31,19 @@ class LDA:
 
         # calculate sigma
         # TODO calculate this with the formula in the slides instead of the built-in NumPy covariance function
-        sigma = np.cov(x, rowvar=False)              # stores the covariance matrix of x
-        sigma_inverse = np.linalg.inv(sigma)
+        x_1s = np.zeros((1, x.shape[1]))
+        x_0s = np.zeros((1, x.shape[1]))
+        for i in range(y.size):
+            if y[i] == 0:
+                x_0s = np.concatenate((x_0s, np.expand_dims(x[i], 0)))
+            else:
+                x_1s = np.concatenate((x_1s, np.expand_dims(x[i], 0)))
+        x_0s = np.delete(x_0s, 0, 0)
+        x_1s = np.delete(x_1s, 0, 0)
+        sig_0s = np.cov(x_0s.T)
+        sig_1s = np.cov(x_1s.T)
+        sig = np.add(sig_0s, sig_1s)
+        sigma_inverse = np.linalg.inv(sig.T)
 
         # calculate log-odds result
         self.w0 = np.log(np.true_divide(p1, p0))
