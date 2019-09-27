@@ -56,9 +56,8 @@ class LDA:
     def predict(self, x):
         y = np.zeros(x.shape[0])
         for i in range(y.shape[0]):
-            # find the probability of each data point being in class 1:
+            # find the classification of each data point:
             #   multiply each input data point by the stored weight parameter, and add in bias term
-                # TODO figure out why this probability is not landing between 0 and 1
-            if self.w0 + np.dot(x[i].T, self.w) > 0.5:
-                y[i] = 1        # if probability > 0.5, predict class 1
+            if self.w0 + np.dot(x[i].T, self.w) > 0:
+                y[i] = 1        # if w_0 + (x^T)(w), predict class 1 (otherwise default 0)
         return y
