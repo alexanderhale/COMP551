@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import lda
+import lr
 
 # y = true labels
 # y_hat = training labels
@@ -16,15 +17,21 @@ def evaluate_acc(y, y_hat):
 # y = class labels of training examples
 # x = feature data of training examples
 # 2 < k = number of folds to use in validation
+# algorithm in {lda, lr} = classification approach to use
 # return: average of prediction error over the k rounds of execution
-def k_fold(x, y, k):
+def k_fold(x, y, k, algorithm):
     if k < 1:
         return "Must have at least 1 fold."
     elif k > (x.shape[0]//2):
         return "Too many folds."
     elif k == 1:
         print("1 fold selected - model will be trained and validated on same data set")
-        model = lda.LDA(0,0)
+        if algorithm == "lda":
+            model = lda.LDA()
+        elif algorithm == "lr":
+            model = lr.LogisticRegression()
+        else:
+            return "Classification approach must be lr or lda."
         model.fit(x, y)
         return evaluate_acc(y, model.predict(x))
     else:
@@ -45,7 +52,12 @@ def k_fold(x, y, k):
             y_trn = np.concatenate((y[0:lower_row], y[upper_row:]))
 
             # train model
-            model = lda.LDA(0,0)
+            if algorithm == "lda":
+                model = lda.LDA()
+            elif algorithm == "lr":
+                model = lr.LogisticRegression()
+            else:
+                return "Classification approach must be lr or lda."
             model.fit(x_trn, y_trn)
 
             # run validation set through model
@@ -54,14 +66,18 @@ def k_fold(x, y, k):
 
         return accuracy / k
 
+def load_data(file_path, delimiter, skiprows=0):
+    """loads a data file and returns a numpy array"""
+    file = open(file_path, "rb")
+    arr = np.loadtxt(file, delimiter=delimiter, skiprows=skiprows)
+    return arr
 
+# WINE IMPORT #
 # import data from CSV file
 with open('winequality-red.csv', 'r') as inputfile:
     winedata = list(csv.reader(inputfile, delimiter=';'))
-
 # convert data to NumPy 2D array
 winedata = np.array(winedata[1:], dtype=np.float)
-
 # turn "quality" attribute to binary
 for row in winedata:
     if row[11] >= 6:
@@ -69,14 +85,21 @@ for row in winedata:
     else:
         row[11] = 0
 
-# single accuracy test
-# wine = lda.LDA(0, 0)                            # create an LDA object
-# wine.fit(winedata[:, 0:10], winedata[:, 11])    # call LDA with the training data
-# y_hat = wine.predict(winedata[:, 0:10])         # predict the class of all the input data points
-# print(evaluate_acc(winedata[:, 11], y_hat))
+# BREAST CANCER IMPORT #
+bcdata = load_data("breast-cancer-wisconsin.csv", ",")
+# clean up data
+for row in bcdata:
+    row[-1] = 0 if row[-1] == 2 else 1
+# pick out training points from classes
+X=bcdata[:,1:10]
+Y=np.ravel((bcdata[:,-1:]))
 
 # k-fold accuracy test
-print(k_fold(winedata[:, 0:10], winedata[:, 11], 1))    # evaluate model accuracy using k-fold validation
+print("4-fold LDA accuracy on breast cancer: " + str(k_fold(X, Y, 4, 'lda')))
+print("4-fold LDA accuracy on wine: " + str(k_fold(winedata[:, 0:10], winedata[:, 11], 4, 'lda')))
+print("4-fold LR accuracy on breast cancer: " + str(k_fold(X, Y, 4, 'lr')))
+print("4-fold LR accuracy on wine: " + str(k_fold(winedata[:, 0:10], winedata[:, 11], 4, 'lr')))
+
 
 # compare performance to scikit learn
 # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
