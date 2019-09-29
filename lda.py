@@ -2,9 +2,9 @@ import numpy as np
 
 # Linear Discriminant Analysis
 class LDA:
-    def __init__(self, w0, w):
-        self.w0 = w0     # weight parameter 0
-        self.w = w       # initialized as zero, but later stores a vector of other weights
+    def __init__(self):
+        self.w0 = 0     # weight parameter 0
+        self.w = 0      # initialized as zero, but later stores a vector of other weights
 
     # x = 2D array containing training data
     # y = results of that training data
